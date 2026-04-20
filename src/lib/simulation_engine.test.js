@@ -31,4 +31,37 @@ describe('Simulation Engine', () => {
       expect(typeof member.lng).toBe('number');
     });
   });
+
+  // Edge cases and integration checks
+  test('all sections are present and unique', () => {
+    const data = getSimulationData();
+    const ids = data.map(s => s.id);
+    const uniqueIds = new Set(ids);
+    expect(uniqueIds.size).toBe(ids.length);
+    expect(ids).toContain('S1');
+    expect(ids).toContain('C1');
+    expect(ids).toContain('R1');
+  });
+
+  test('wait times are correctly calculated based on type', () => {
+    const data = getSimulationData();
+    const concessions = data.filter(d => d.type === 'concession');
+    const restrooms = data.filter(d => d.type === 'restroom');
+    const gates = data.filter(d => d.type === 'gate');
+
+    concessions.forEach(c => {
+      // Density / 5
+      expect(c.waitTime).toBe(Math.floor(c.density / 5));
+    });
+
+    restrooms.forEach(r => {
+      // Density / 10
+      expect(r.waitTime).toBe(Math.floor(r.density / 10));
+    });
+
+    gates.forEach(g => {
+      // Density / 8
+      expect(g.waitTime).toBe(Math.floor(g.density / 8));
+    });
+  });
 });

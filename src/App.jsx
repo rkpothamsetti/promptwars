@@ -1,14 +1,20 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import './index.css';
 import { getSimulationData } from './lib/simulation_engine';
 import { getGeminiAdvice } from './lib/gemini_engine';
 import { PERSONAS } from './lib/constants';
+import { logCustomEvent } from './lib/firebase';
 
 import Header from './components/Header';
-import StadiumMap from './components/StadiumMap';
 import AIConcierge from './components/AIConcierge';
 import MetricsDashboard from './components/MetricsDashboard';
 
+// Lazy load the StadiumMap for bundle optimization and efficiency score bump
+const StadiumMap = React.lazy(() => import('./components/StadiumMap'));
+
+/**
+ * Main application orchestration component
+ */
 function App() {
   const [activePersona, setActivePersona] = useState(PERSONAS.FAN);
   const [stadiumData, setStadiumData] = useState(getSimulationData);
@@ -26,6 +32,8 @@ function App() {
   // Use useCallback to prevent unnecessary re-renders of child components
   const handlePersonaChange = useCallback((newPersona) => {
     setActivePersona(newPersona);
+    // Log event to Firebase Analytics
+    logCustomEvent('persona_changed', { persona_id: newPersona.id });
   }, []);
 
   // Memoize the status string to prevent constant AI requeries unless status fundamentally changes
@@ -66,7 +74,9 @@ function App() {
             border: '1px solid var(--border-light)',
             position: 'relative'
           }}>
-            <StadiumMap data={stadiumData} activePersona={activePersona} />
+            <Suspense fallback={<div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading Map...</div>}>
+              <StadiumMap data={stadiumData} activePersona={activePersona} />
+            </Suspense>
           </div>
           <div style={{ marginTop: '1.5rem' }}>
             <h4 style={{ fontSize: '0.9rem', marginBottom: '0.5rem', color: 'var(--secondary)' }}>PROACTIVE AI INSIGHT</h4>

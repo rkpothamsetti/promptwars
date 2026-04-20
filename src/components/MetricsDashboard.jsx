@@ -1,5 +1,9 @@
 import React, { useMemo } from 'react';
+import PropTypes from 'prop-types';
 
+/**
+ * Displays live utilities, metrics, and alerts based on the active persona.
+ */
 const MetricsDashboard = React.memo(({ stadiumData, activePersona }) => {
   const isStaff = activePersona.id === 'STAFF';
   
@@ -61,5 +65,19 @@ const MetricsDashboard = React.memo(({ stadiumData, activePersona }) => {
     </section>
   );
 });
+
+MetricsDashboard.propTypes = {
+  stadiumData: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string,
+    type: PropTypes.string,
+    density: PropTypes.number,
+    waitTime: PropTypes.number,
+    status: PropTypes.string
+  })).isRequired,
+  activePersona: PropTypes.shape({
+    id: PropTypes.string.isRequired
+  }).isRequired
+};
 
 export default MetricsDashboard;

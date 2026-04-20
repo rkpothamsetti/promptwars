@@ -1,5 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
+/**
+ * Interactive SVG map of the stadium visualizing crowd density.
+ */
 const StadiumMap = ({ data, activePersona }) => {
   // Simple SVG mapping of sections
   // We'll represent the stadium as an oval with 4 main stands
@@ -58,6 +62,16 @@ const StadiumMap = ({ data, activePersona }) => {
       </div>
     </div>
   );
+};
+
+StadiumMap.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    status: PropTypes.string
+  })).isRequired,
+  activePersona: PropTypes.shape({
+    id: PropTypes.string.isRequired
+  }).isRequired
 };
 
 export default StadiumMap;

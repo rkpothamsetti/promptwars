@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
+import DOMPurify from 'dompurify';
+import PropTypes from 'prop-types';
 
+/**
+ * AI Concierge component for the smart stadium, powered by Gemini.
+ */
 const AIConcierge = React.memo(({ aiAdvice, activePersona }) => {
   const [inputValue, setInputValue] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
 
   const handleSend = (e) => {
     if (e.key === 'Enter' && inputValue.trim()) {
-      // Basic sanitization
-      const cleanInput = inputValue.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      // Advanced sanitization using DOMPurify for security
+      const cleanInput = DOMPurify.sanitize(inputValue);
       setChatHistory([...chatHistory, { type: 'user', text: cleanInput }]);
       setInputValue('');
       
@@ -81,5 +86,19 @@ const AIConcierge = React.memo(({ aiAdvice, activePersona }) => {
     </section>
   );
 });
+
+AIConcierge.propTypes = {
+  aiAdvice: PropTypes.shape({
+    message: PropTypes.string,
+    action: PropTypes.string
+  }),
+  activePersona: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    label: PropTypes.string,
+    icon: PropTypes.string,
+    description: PropTypes.string,
+    theme: PropTypes.string
+  }).isRequired
+};
 
 export default AIConcierge;

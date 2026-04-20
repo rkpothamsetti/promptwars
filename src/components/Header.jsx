@@ -1,6 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { PERSONAS } from '../lib/constants';
 
+/**
+ * Application header and persona selector.
+ */
 const Header = React.memo(({ activePersona, setActivePersona }) => {
   return (
     <header style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem' }}>
@@ -32,5 +36,16 @@ const Header = React.memo(({ activePersona, setActivePersona }) => {
     </header>
   );
 });
+
+Header.propTypes = {
+  activePersona: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    label: PropTypes.string,
+    icon: PropTypes.string,
+    description: PropTypes.string,
+    theme: PropTypes.string
+  }).isRequired,
+  setActivePersona: PropTypes.func.isRequired
+};
 
 export default Header;
