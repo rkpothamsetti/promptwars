@@ -2,24 +2,42 @@
  * Gemini Intelligence Engine for SmartStadium OS
  * Handles proactive suggestions and natural language interactions.
  */
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// This is a placeholder for real Gemini API integration
-// In a real environment, you'd use @google/generative-ai
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null;
 
+/**
+ * Gets proactive advice from Gemini API based on persona and stadium data.
+ * @param {Object} persona - The active persona (FAN, FAMILY, STAFF).
+ * @param {Array} stadiumData - The current stadium metrics.
+ * @returns {Promise<Object>} An object containing message and action.
+ */
 export const getGeminiAdvice = async (persona, stadiumData) => {
   const highTrafficArea = stadiumData.find(d => d.status === 'HIGH');
   const fastestGate = stadiumData
     .filter(d => d.type === 'gate')
     .sort((a, b) => a.waitTime - b.waitTime)[0];
 
-  // Simulated AI logic based on persona context
   const prompts = {
-    FAN: `Analyze stadium state for a fan. Fastest concession is ${stadiumData.find(d => d.type === 'concession')?.name}.`,
-    FAMILY: `Analyze for a family. Recommendation: Use ${fastestGate?.name} for exit.`,
-    STAFF: `Security alert: ${highTrafficArea?.name || 'All clear'} is at ${highTrafficArea?.density || 0}% capacity.`
+    FAN: `You are an AI assistant for a cricket stadium. The user is a Die-Hard Fan. Fastest concession wait time is for ${stadiumData.find(d => d.type === 'concession')?.name}. Give a short 1-2 sentence tip.`,
+    FAMILY: `You are an AI assistant for a cricket stadium. The user is with a Family Group. They want low congestion. Fastest gate is ${fastestGate?.name}. Give a short 1-2 sentence tip.`,
+    STAFF: `You are an AI assistant for a cricket stadium. The user is Ground Staff. The area ${highTrafficArea?.name || 'none'} is experiencing high traffic. Give a short 1-2 sentence operational alert.`
   };
 
-  // Simulate API delay
+  if (genAI) {
+    try {
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const result = await model.generateContent(prompts[persona.id]);
+      const response = await result.response;
+      return { message: response.text(), action: 'AI_SUGGESTION' };
+    } catch (error) {
+      console.error("Gemini API Error:", error);
+      // Fall through to fallback
+    }
+  }
+
+  // Fallback Logic if API Key is missing or request fails
   await new Promise(r => setTimeout(r, 500));
 
   if (persona.id === 'FAN') {

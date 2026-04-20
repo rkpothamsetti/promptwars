@@ -15,6 +15,10 @@ const SECTIONS = [
   { id: 'G2', name: 'Entrance Gate B', type: 'gate' },
 ];
 
+/**
+ * Generates an array of stadium sections with randomized metrics for simulation.
+ * @returns {Array<{id: string, name: string, type: string, density: number, waitTime: number, status: string, lastUpdated: string}>} Simulated stadium data array.
+ */
 export const getSimulationData = () => {
   return SECTIONS.map(section => {
     // Generate random density 0-100
@@ -36,6 +40,10 @@ export const getSimulationData = () => {
   });
 };
 
+/**
+ * Retrieves the simulated locations of a user's squad/friends within the stadium.
+ * @returns {Array<{id: string, name: string, lat: number, lng: number, status: string}>} Array of squad members and their simulated statuses.
+ */
 export const getSquadLocations = () => {
   return [
     { id: 'U1', name: 'Rahul', lat: 0.1, lng: 0.2, status: 'At Section S1' },
